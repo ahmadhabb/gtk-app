@@ -4,7 +4,7 @@ from gi.repository import Gtk, Gdk
 from app.dialogs.media_source_dialog import MediaSourceDialog
 
 class MainWindow(Gtk.Window):
-    """Jendela utama aplikasi."""
+    """Main application window."""
 
     def __init__(self, controller):
         super().__init__(title="Fisheye Video Conference System")
@@ -15,7 +15,7 @@ class MainWindow(Gtk.Window):
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.add(main_box)
 
-        # Horizontal Box untuk Sidebar dan Main Area
+        # Horizontal Box for Sidebar and Main Area
         content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         main_box.pack_start(content_box, True, True, 0)
 
@@ -32,6 +32,14 @@ class MainWindow(Gtk.Window):
         self.sidebar_box.set_margin_bottom(10)
         self.sidebar_box.set_margin_left(10)
         self.sidebar_box.set_margin_right(10)
+
+        # Wrap the sidebar_box with Gtk.Frame to add a border
+        sidebar_frame = Gtk.Frame()
+        sidebar_frame.set_shadow_type(Gtk.ShadowType.ETCHED_IN)  # Set the type of shadow/border
+        sidebar_frame.add(self.sidebar_box)
+
+        self.sidebar_revealer.add(sidebar_frame)  # Add the frame to the revealer
+        content_box.pack_start(self.sidebar_revealer, False, False, 0)
 
         # Identify Camera Section
         identify_camera_button = Gtk.Button()
@@ -50,27 +58,13 @@ class MainWindow(Gtk.Window):
 
         placement_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         
-        # camera toggle button
+        # Camera Toggle Button
         self.camera_toggle_button = Gtk.Button(label="Camera Downside")
         self.camera_toggle_button.set_size_request(140, 40)
-        self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Default merah (OFF)
+        self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Default red (OFF)
         self.camera_toggle_button.connect("clicked", self.on_camera_toggle_button_clicked)
 
         placement_box.pack_start(self.camera_toggle_button, True, True, 0)
-        # # UP Button
-        # self.up_button = Gtk.Button(label="UP")
-        # self.up_button.set_size_request(135, 40)
-        # self.up_button.connect("clicked", self.on_up_button_clicked)
-        # self.up_button.get_style_context().add_class("suggested-action")  # Default hijau (UP aktif)
-
-        # # DOWN Button
-        # self.down_button = Gtk.Button(label="DOWN")
-        # self.down_button.set_size_request(135, 40)
-        # self.down_button.connect("clicked", self.on_down_button_clicked)
-        # self.down_button.get_style_context().add_class("destructive-action")  # Default merah (DOWN tidak aktif)
-
-        # placement_box.pack_start(self.up_button, True, True, 0)
-        # placement_box.pack_start(self.down_button, True, True, 0)
         self.sidebar_box.pack_start(placement_box, False, False, 0)
 
         # View List Section
@@ -94,21 +88,20 @@ class MainWindow(Gtk.Window):
         content_box.pack_start(center_box, True, True, 0)
 
         # Bottom Bar
-        bottom_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        bottom_bar.set_margin_bottom(10)
-        bottom_bar.set_margin_top(10)
-        bottom_bar.set_margin_left(10)
-        bottom_bar.set_margin_right(10)
-        main_box.pack_end(bottom_bar, False, False, 0)
+        self.bottom_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        self.bottom_bar.set_margin_bottom(10)
+        self.bottom_bar.set_margin_top(10)
+        self.bottom_bar.set_margin_left(10)
+        self.bottom_bar.set_margin_right(10)
+        main_box.pack_end(self.bottom_bar, False, False, 0)
 
         # Add Button
         add_button = Gtk.Button(label="Add Resource")
         add_button.set_size_request(100, 40)
         add_button.get_style_context().add_class("suggested-action") 
         add_button.connect("clicked", self.on_add_button_clicked)
-        bottom_bar.pack_start(add_button, False, False, 0)
+        self.bottom_bar.pack_start(add_button, False, False, 0)
 
-        
         # Play Button
         play_button = Gtk.Button()
         play_button.set_size_request(40, 40)
@@ -116,16 +109,8 @@ class MainWindow(Gtk.Window):
         play_button.set_tooltip_text("Start")
         play_icon = Gtk.Image.new_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON)
         play_button.set_image(play_icon)
-
         play_button.connect("clicked", self.on_play_button_clicked)
-        bottom_bar.pack_start(play_button, False, False, 0)
-
-        # play_button = Gtk.Button(label="")
-        # play_button.set_size_request(40, 40)
-        # play_button.set_tooltip_text("Start")
-        # play_button.set_image(Gtk.Image.new_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON))
-        # play_button.connect("clicked", self.on_play_button_clicked)
-        # bottom_bar.pack_start(play_button, False, False, 0)
+        self.bottom_bar.pack_start(play_button, False, False, 0)
 
         # Mode Buttons
         modes = [
@@ -140,7 +125,7 @@ class MainWindow(Gtk.Window):
             mode_button.set_size_request(140, 40)
             mode_button.connect("clicked", self.on_mode_button_clicked, mode_name)
             mode_button.get_style_context().add_class("suggested-action") 
-            bottom_bar.pack_start(mode_button, False, False, 0)
+            self.bottom_bar.pack_start(mode_button, False, False, 0)
 
         # Limit Person Label and Dropdown
         limit_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
@@ -153,32 +138,41 @@ class MainWindow(Gtk.Window):
         self.limit_dropdown.set_active(0)
         self.limit_dropdown.connect("changed", self.on_limit_dropdown_changed)
         limit_box.pack_start(self.limit_dropdown, False, False, 0)
-        bottom_bar.pack_end(limit_box, False, False, 0)
+        self.bottom_bar.pack_end(limit_box, False, False, 0)
 
         # AI Toggle Button
         self.ai_toggle_button = Gtk.Button(label="AI Tracking (OFF)")
         self.ai_toggle_button.set_size_request(140, 40)
-        self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Default merah (OFF)
+        self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Default red (OFF)
         self.ai_toggle_button.connect("clicked", self.on_ai_toggle_button_clicked)
-        bottom_bar.pack_end(self.ai_toggle_button, False, False, 0)
+        self.bottom_bar.pack_end(self.ai_toggle_button, False, False, 0)
 
         # Config Button
         config_button = Gtk.Button(label="Config")
         config_button.set_size_request(100, 40)
         config_button.get_style_context().add_class("suggested-action") 
         config_button.connect("clicked", self.on_config_button_clicked)
-        bottom_bar.pack_end(config_button, False, False, 0)
+        self.bottom_bar.pack_end(config_button, False, False, 0)
+
+        # Panorama Button (initially hidden)
+        self.panorama_button = Gtk.Button(label="Panorama")
+        self.panorama_button.set_size_request(140, 40)
+        self.panorama_button.get_style_context().add_class("suggested-action")
+        self.panorama_button.set_visible(False)  # Initially hidden
+        print("Panorama button initialized and hidden")  # Log untuk debugging
+        self.panorama_button.connect("clicked", self.on_panorama_button_clicked)
+        self.bottom_bar.pack_start(self.panorama_button, False, False, 0)
 
     def on_add_button_clicked(self, button):
-        """Tampilkan dialog MediaSourceDialog."""
+        """Show MediaSourceDialog."""
         dialog = MediaSourceDialog(self.controller, self)
         response = dialog.run()
 
         if response == Gtk.ResponseType.OK:
             selected_values = dialog.get_selected_values()
-            print(f"Perangkat terpilih: {selected_values}")
+            print(f"Selected devices: {selected_values}")
         else:
-            print("Dialog dibatalkan")
+            print("Dialog canceled")
 
         dialog.destroy()
 
@@ -186,21 +180,37 @@ class MainWindow(Gtk.Window):
         print("Play Button Clicked!")
 
     def on_mode_button_clicked(self, button, mode_name):
+        """Handle mode button clicks."""
         print(f"{mode_name} Mode Selected!")
+        print(f"Panorama button visibility before toggle: {self.panorama_button.get_visible()}")
+
+    # Toggle Panorama button visibility only in Discussion Mode
+        if mode_name == "Discussion":
+            # Toggle visibility of the Panorama button
+            self.panorama_button.set_visible(not self.panorama_button.get_visible())
+        else:
+            # Hide Panorama button for other modes
+            self.panorama_button.set_visible(False)
+
+        print(f"Panorama button visibility after toggle: {self.panorama_button.get_visible()}")
+        
+    def on_panorama_button_clicked(self, button):
+        """Handle Panorama button click."""
+        print("Panorama Button Clicked!")
 
     def on_config_button_clicked(self, button):
         """Toggle the visibility of the sidebar."""
         self.sidebar_revealer.set_reveal_child(not self.sidebar_revealer.get_reveal_child())
 
     def on_limit_dropdown_changed(self, dropdown):
-        """Handle perubahan pada dropdown Limit Person."""
+        """Handle changes in the Limit Person dropdown."""
         selected_value = dropdown.get_active_text()
         if selected_value:
             limit = int(selected_value)
             self.update_view_list(limit)
 
     def update_view_list(self, limit):
-        """Perbarui daftar view berdasarkan limit yang dipilih."""
+        """Update the view list based on the selected limit."""
         for child in self.view_list_box.get_children():
             self.view_list_box.remove(child)
 
@@ -219,37 +229,23 @@ class MainWindow(Gtk.Window):
         self.view_list_box.show_all()
 
     def on_ai_toggle_button_clicked(self, button):
-        """Handle klik pada tombol AI toggle."""
+        """Handle AI toggle button click."""
         if self.ai_toggle_button.get_label() == "AI Tracking (OFF)":
             self.ai_toggle_button.set_label("AI Tracking (ON)")
             self.ai_toggle_button.get_style_context().remove_class("destructive-action")
-            self.ai_toggle_button.get_style_context().add_class("suggested-action")  # Hijau (ON)
+            self.ai_toggle_button.get_style_context().add_class("suggested-action")  # Green (ON)
         else:
             self.ai_toggle_button.set_label("AI Tracking (OFF)")
             self.ai_toggle_button.get_style_context().remove_class("suggested-action")
-            self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Merah (OFF)
-
+            self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Red (OFF)
 
     def on_camera_toggle_button_clicked(self, button):
-        """Handle klik pada tombol Camera toggle."""
+        """Handle Camera toggle button click."""
         if self.camera_toggle_button.get_label() == "Camera Downside":
             self.camera_toggle_button.set_label("Camera Upside")
             self.camera_toggle_button.get_style_context().remove_class("destructive-action")
-            self.camera_toggle_button.get_style_context().add_class("suggested-action")  # Hijau (ON)
+            self.camera_toggle_button.get_style_context().add_class("suggested-action")  # Green (ON)
         else:
             self.camera_toggle_button.set_label("Camera Downside")
             self.camera_toggle_button.get_style_context().remove_class("suggested-action")
-            self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Merah (OFF)
-
-
-    # def on_up_button_clicked(self, button):
-    #     """Handle klik pada tombol UP."""
-    #     self.up_button.get_style_context().add_class("suggested-action")  # Hijau (UP aktif)
-    #     self.down_button.get_style_context().remove_class("suggested-action")
-    #     self.down_button.get_style_context().add_class("destructive-action")  # Merah (DOWN tidak aktif)
-
-    # def on_down_button_clicked(self, button):
-    #     """Handle klik pada tombol DOWN."""
-    #     self.down_button.get_style_context().add_class("suggested-action")  # Hijau (DOWN aktif)
-    #     self.up_button.get_style_context().remove_class("suggested-action")
-    #     self.up_button.get_style_context().add_class("destructive-action")  # Merah (UP tidak aktif)
+            self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Red (OFF)

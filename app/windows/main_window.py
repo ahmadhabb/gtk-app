@@ -49,18 +49,28 @@ class MainWindow(Gtk.Window):
         self.sidebar_box.pack_start(placement_camera_label, False, False, 0)
 
         placement_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        up_button = Gtk.Button()
-        up_image = Gtk.Image.new_from_icon_name("go-up-symbolic", Gtk.IconSize.BUTTON)
-        up_button.set_image(up_image)
-        up_button.set_size_request(135, 40)
+        
+        # camera toggle button
+        self.camera_toggle_button = Gtk.Button(label="Camera Downside")
+        self.camera_toggle_button.set_size_request(140, 40)
+        self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Default merah (OFF)
+        self.camera_toggle_button.connect("clicked", self.on_camera_toggle_button_clicked)
 
-        down_button = Gtk.Button()
-        down_image = Gtk.Image.new_from_icon_name("go-down-symbolic", Gtk.IconSize.BUTTON)
-        down_button.set_image(down_image)
-        down_button.set_size_request(135, 40)
+        placement_box.pack_start(self.camera_toggle_button, True, True, 0)
+        # # UP Button
+        # self.up_button = Gtk.Button(label="UP")
+        # self.up_button.set_size_request(135, 40)
+        # self.up_button.connect("clicked", self.on_up_button_clicked)
+        # self.up_button.get_style_context().add_class("suggested-action")  # Default hijau (UP aktif)
 
-        placement_box.pack_start(up_button, True, True, 0)
-        placement_box.pack_start(down_button, True, True, 0)
+        # # DOWN Button
+        # self.down_button = Gtk.Button(label="DOWN")
+        # self.down_button.set_size_request(135, 40)
+        # self.down_button.connect("clicked", self.on_down_button_clicked)
+        # self.down_button.get_style_context().add_class("destructive-action")  # Default merah (DOWN tidak aktif)
+
+        # placement_box.pack_start(self.up_button, True, True, 0)
+        # placement_box.pack_start(self.down_button, True, True, 0)
         self.sidebar_box.pack_start(placement_box, False, False, 0)
 
         # View List Section
@@ -134,6 +144,13 @@ class MainWindow(Gtk.Window):
         limit_box.pack_start(self.limit_dropdown, False, False, 0)
         bottom_bar.pack_end(limit_box, False, False, 0)
 
+        # AI Toggle Button
+        self.ai_toggle_button = Gtk.Button(label="AI Tracking (OFF)")
+        self.ai_toggle_button.set_size_request(140, 40)
+        self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Default merah (OFF)
+        self.ai_toggle_button.connect("clicked", self.on_ai_toggle_button_clicked)
+        bottom_bar.pack_end(self.ai_toggle_button, False, False, 0)
+
         # Config Button
         config_button = Gtk.Button(label="Config")
         config_button.set_size_request(100, 40)
@@ -166,7 +183,6 @@ class MainWindow(Gtk.Window):
 
     def on_limit_dropdown_changed(self, dropdown):
         """Handle perubahan pada dropdown Limit Person."""
-        # Dapatkan nilai yang dipilih dari dropdown
         selected_value = dropdown.get_active_text()
         if selected_value:
             limit = int(selected_value)
@@ -174,11 +190,9 @@ class MainWindow(Gtk.Window):
 
     def update_view_list(self, limit):
         """Perbarui daftar view berdasarkan limit yang dipilih."""
-        # Hapus semua tombol view yang ada
         for child in self.view_list_box.get_children():
             self.view_list_box.remove(child)
 
-        # Tambahkan tombol view sesuai dengan limit yang dipilih
         for i in range(1, limit + 1):
             view_button = Gtk.Button()
             view_button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
@@ -190,8 +204,41 @@ class MainWindow(Gtk.Window):
             view_button.set_size_request(280, 40)
             self.view_list_box.pack_start(view_button, False, False, 0)
 
-        # Tampilkan sidebar
         self.sidebar_revealer.set_reveal_child(True)
-
-        # Perbarui tampilan
         self.view_list_box.show_all()
+
+    def on_ai_toggle_button_clicked(self, button):
+        """Handle klik pada tombol AI toggle."""
+        if self.ai_toggle_button.get_label() == "AI Tracking (OFF)":
+            self.ai_toggle_button.set_label("AI Tracking (ON)")
+            self.ai_toggle_button.get_style_context().remove_class("destructive-action")
+            self.ai_toggle_button.get_style_context().add_class("suggested-action")  # Hijau (ON)
+        else:
+            self.ai_toggle_button.set_label("AI Tracking (OFF)")
+            self.ai_toggle_button.get_style_context().remove_class("suggested-action")
+            self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Merah (OFF)
+
+
+    def on_camera_toggle_button_clicked(self, button):
+        """Handle klik pada tombol Camera toggle."""
+        if self.camera_toggle_button.get_label() == "Camera Downside":
+            self.camera_toggle_button.set_label("Camera Upside")
+            self.camera_toggle_button.get_style_context().remove_class("destructive-action")
+            self.camera_toggle_button.get_style_context().add_class("suggested-action")  # Hijau (ON)
+        else:
+            self.camera_toggle_button.set_label("Camera Downside")
+            self.camera_toggle_button.get_style_context().remove_class("suggested-action")
+            self.camera_toggle_button.get_style_context().add_class("destructive-action")  # Merah (OFF)
+
+
+    # def on_up_button_clicked(self, button):
+    #     """Handle klik pada tombol UP."""
+    #     self.up_button.get_style_context().add_class("suggested-action")  # Hijau (UP aktif)
+    #     self.down_button.get_style_context().remove_class("suggested-action")
+    #     self.down_button.get_style_context().add_class("destructive-action")  # Merah (DOWN tidak aktif)
+
+    # def on_down_button_clicked(self, button):
+    #     """Handle klik pada tombol DOWN."""
+    #     self.down_button.get_style_context().add_class("suggested-action")  # Hijau (DOWN aktif)
+    #     self.up_button.get_style_context().remove_class("suggested-action")
+    #     self.up_button.get_style_context().add_class("destructive-action")  # Merah (UP tidak aktif)

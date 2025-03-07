@@ -26,12 +26,12 @@ class MainWindow(Gtk.Window):
         self.sidebar_revealer.set_reveal_child(False)
 
         # Sidebar Content
-        sidebar_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        sidebar_box.set_size_request(300, -1)
-        sidebar_box.set_margin_top(10)
-        sidebar_box.set_margin_bottom(10)
-        sidebar_box.set_margin_left(10)
-        sidebar_box.set_margin_right(10)
+        self.sidebar_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.sidebar_box.set_size_request(300, -1)
+        self.sidebar_box.set_margin_top(10)
+        self.sidebar_box.set_margin_bottom(10)
+        self.sidebar_box.set_margin_left(10)
+        self.sidebar_box.set_margin_right(10)
 
         # Identify Camera Section
         identify_camera_button = Gtk.Button()
@@ -41,12 +41,12 @@ class MainWindow(Gtk.Window):
         identify_camera_box.pack_start(identify_camera_icon, False, False, 0)
         identify_camera_box.pack_start(identify_camera_label, False, False, 0)
         identify_camera_button.add(identify_camera_box)
-        sidebar_box.pack_start(identify_camera_button, False, False, 10)
+        self.sidebar_box.pack_start(identify_camera_button, False, False, 10)
 
         # Placement Camera Section
         placement_camera_label = Gtk.Label(label="Placement Camera")
         placement_camera_label.set_markup('<span font="16" weight="bold">Placement Camera</span>')
-        sidebar_box.pack_start(placement_camera_label, False, False, 0)
+        self.sidebar_box.pack_start(placement_camera_label, False, False, 0)
 
         placement_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         up_button = Gtk.Button()
@@ -61,27 +61,17 @@ class MainWindow(Gtk.Window):
 
         placement_box.pack_start(up_button, True, True, 0)
         placement_box.pack_start(down_button, True, True, 0)
-        sidebar_box.pack_start(placement_box, False, False, 0)
+        self.sidebar_box.pack_start(placement_box, False, False, 0)
 
         # View List Section
-        view_list_label = Gtk.Label(label="View List")
-        view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
-        sidebar_box.pack_start(view_list_label, False, False, 0)
+        self.view_list_label = Gtk.Label(label="View List")
+        self.view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
+        self.sidebar_box.pack_start(self.view_list_label, False, False, 0)
 
-        view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        for i in range(1, 13):
-            view_button = Gtk.Button()
-            view_button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-            view_icon = Gtk.Image.new_from_icon_name("view-app-grid-symbolic", Gtk.IconSize.BUTTON)
-            view_label = Gtk.Label(label=f"VIEW {i}")
-            view_button_box.pack_start(view_icon, False, False, 0)
-            view_button_box.pack_start(view_label, False, False, 0)
-            view_button.add(view_button_box)
-            view_button.set_size_request(280, 40)
-            view_list_box.pack_start(view_button, False, False, 0)
-        sidebar_box.pack_start(view_list_box, False, False, 0)
+        self.view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.sidebar_box.pack_start(self.view_list_box, False, False, 0)
 
-        self.sidebar_revealer.add(sidebar_box)
+        self.sidebar_revealer.add(self.sidebar_box)
         content_box.pack_start(self.sidebar_revealer, False, False, 0)
 
         # Main Content Area
@@ -136,11 +126,12 @@ class MainWindow(Gtk.Window):
         limit_label = Gtk.Label(label="Limit Person:")
         limit_box.pack_start(limit_label, False, False, 0)
 
-        limit_dropdown = Gtk.ComboBoxText()
+        self.limit_dropdown = Gtk.ComboBoxText()
         for i in range(2, 13):
-            limit_dropdown.append_text(str(i))
-        limit_dropdown.set_active(0)
-        limit_box.pack_start(limit_dropdown, False, False, 0)
+            self.limit_dropdown.append_text(str(i))
+        self.limit_dropdown.set_active(0)
+        self.limit_dropdown.connect("changed", self.on_limit_dropdown_changed)
+        limit_box.pack_start(self.limit_dropdown, False, False, 0)
         bottom_bar.pack_end(limit_box, False, False, 0)
 
         # Config Button
@@ -172,3 +163,35 @@ class MainWindow(Gtk.Window):
     def on_config_button_clicked(self, button):
         """Toggle the visibility of the sidebar."""
         self.sidebar_revealer.set_reveal_child(not self.sidebar_revealer.get_reveal_child())
+
+    def on_limit_dropdown_changed(self, dropdown):
+        """Handle perubahan pada dropdown Limit Person."""
+        # Dapatkan nilai yang dipilih dari dropdown
+        selected_value = dropdown.get_active_text()
+        if selected_value:
+            limit = int(selected_value)
+            self.update_view_list(limit)
+
+    def update_view_list(self, limit):
+        """Perbarui daftar view berdasarkan limit yang dipilih."""
+        # Hapus semua tombol view yang ada
+        for child in self.view_list_box.get_children():
+            self.view_list_box.remove(child)
+
+        # Tambahkan tombol view sesuai dengan limit yang dipilih
+        for i in range(1, limit + 1):
+            view_button = Gtk.Button()
+            view_button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+            view_icon = Gtk.Image.new_from_icon_name("view-app-grid-symbolic", Gtk.IconSize.BUTTON)
+            view_label = Gtk.Label(label=f"VIEW {i}")
+            view_button_box.pack_start(view_icon, False, False, 0)
+            view_button_box.pack_start(view_label, False, False, 0)
+            view_button.add(view_button_box)
+            view_button.set_size_request(280, 40)
+            self.view_list_box.pack_start(view_button, False, False, 0)
+
+        # Tampilkan sidebar
+        self.sidebar_revealer.set_reveal_child(True)
+
+        # Perbarui tampilan
+        self.view_list_box.show_all()

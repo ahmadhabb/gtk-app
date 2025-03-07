@@ -33,29 +33,51 @@ class MainWindow(Gtk.Window):
         sidebar_box.set_margin_left(10)
         sidebar_box.set_margin_right(10)
 
-        # Add some example widgets to the sidebar
-        sidebar_label = Gtk.Label(label="Configuration")
-        sidebar_label.set_markup('<span font="20">Configuration</span>')
-        sidebar_box.pack_start(sidebar_label, False, False, 0)
+        # # View List Section
+        # view_list_label = Gtk.Label(label="View List")
+        # view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
+        # sidebar_box.pack_start(view_list_label, False, False, 0)
 
-        # Example: Brightness Adjustment
-        brightness_label = Gtk.Label(label="Brightness:")
-        sidebar_box.pack_start(brightness_label, False, False, 0)
+        # view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        # for i in range(1, 13):
+        #     view_button = Gtk.Button(label=f"VIEW {i}")
+        #     view_button.set_size_request(280, 40)
+        #     view_list_box.pack_start(view_button, False, False, 0)
+        # sidebar_box.pack_start(view_list_box, False, False, 0)
 
-        brightness_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
-        brightness_scale.set_value(50)
-        sidebar_box.pack_start(brightness_scale, False, False, 0)
+        # Identify Camera Section
+        identify_camera_label = Gtk.Button(label="Identify Camera")
+        sidebar_box.pack_start(identify_camera_label, False, False, 10)
 
-        # Example: Contrast Adjustment
-        contrast_label = Gtk.Label(label="Contrast:")
-        sidebar_box.pack_start(contrast_label, False, False, 0)
+        # Placement Camera Section
+        placement_camera_label = Gtk.Label(label="Placement Camera")
+        placement_camera_label.set_markup('<span font="16" weight="bold">Placement Camera</span>')
+        sidebar_box.pack_start(placement_camera_label, False, False, 0)
 
-        contrast_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
-        contrast_scale.set_value(50)
-        sidebar_box.pack_start(contrast_scale, False, False, 0)
+        placement_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        up_button = Gtk.Button(label="UP")
+        down_button = Gtk.Button(label="DOWN")
+        up_button.set_size_request(135, 40)
+        down_button.set_size_request(135, 40)
+        placement_box.pack_start(up_button, True, True, 0)
+        placement_box.pack_start(down_button, True, True, 0)
+        sidebar_box.pack_start(placement_box, False, False, 0)
 
         self.sidebar_revealer.add(sidebar_box)
         content_box.pack_start(self.sidebar_revealer, False, False, 0)
+
+
+         # View List Section
+        view_list_label = Gtk.Label(label="View List")
+        view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
+        sidebar_box.pack_start(view_list_label, False, False, 0)
+
+        view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        for i in range(1, 13):
+            view_button = Gtk.Button(label=f"VIEW {i}")
+            view_button.set_size_request(280, 40)
+            view_list_box.pack_start(view_button, False, False, 0)
+        sidebar_box.pack_start(view_list_box, False, False, 0)
 
         # Main Content Area
         center_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)

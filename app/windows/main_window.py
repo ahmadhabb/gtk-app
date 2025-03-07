@@ -33,21 +33,15 @@ class MainWindow(Gtk.Window):
         sidebar_box.set_margin_left(10)
         sidebar_box.set_margin_right(10)
 
-        # # View List Section
-        # view_list_label = Gtk.Label(label="View List")
-        # view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
-        # sidebar_box.pack_start(view_list_label, False, False, 0)
-
-        # view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        # for i in range(1, 13):
-        #     view_button = Gtk.Button(label=f"VIEW {i}")
-        #     view_button.set_size_request(280, 40)
-        #     view_list_box.pack_start(view_button, False, False, 0)
-        # sidebar_box.pack_start(view_list_box, False, False, 0)
-
         # Identify Camera Section
-        identify_camera_label = Gtk.Button(label="Identify Camera")
-        sidebar_box.pack_start(identify_camera_label, False, False, 10)
+        identify_camera_button = Gtk.Button()
+        identify_camera_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        identify_camera_icon = Gtk.Image.new_from_icon_name("camera-web-symbolic", Gtk.IconSize.BUTTON)
+        identify_camera_label = Gtk.Label(label="Identify Camera")
+        identify_camera_box.pack_start(identify_camera_icon, False, False, 0)
+        identify_camera_box.pack_start(identify_camera_label, False, False, 0)
+        identify_camera_button.add(identify_camera_box)
+        sidebar_box.pack_start(identify_camera_button, False, False, 10)
 
         # Placement Camera Section
         placement_camera_label = Gtk.Label(label="Placement Camera")
@@ -55,29 +49,40 @@ class MainWindow(Gtk.Window):
         sidebar_box.pack_start(placement_camera_label, False, False, 0)
 
         placement_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        up_button = Gtk.Button(label="UP")
-        down_button = Gtk.Button(label="DOWN")
+        up_button = Gtk.Button()
+        up_image = Gtk.Image.new_from_icon_name("go-up-symbolic", Gtk.IconSize.BUTTON)
+        up_button.set_image(up_image)
         up_button.set_size_request(135, 40)
+
+        down_button = Gtk.Button()
+        down_image = Gtk.Image.new_from_icon_name("go-down-symbolic", Gtk.IconSize.BUTTON)
+        down_button.set_image(down_image)
         down_button.set_size_request(135, 40)
+
         placement_box.pack_start(up_button, True, True, 0)
         placement_box.pack_start(down_button, True, True, 0)
         sidebar_box.pack_start(placement_box, False, False, 0)
 
-        self.sidebar_revealer.add(sidebar_box)
-        content_box.pack_start(self.sidebar_revealer, False, False, 0)
-
-
-         # View List Section
+        # View List Section
         view_list_label = Gtk.Label(label="View List")
         view_list_label.set_markup('<span font="16" weight="bold">View List</span>')
         sidebar_box.pack_start(view_list_label, False, False, 0)
 
         view_list_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         for i in range(1, 13):
-            view_button = Gtk.Button(label=f"VIEW {i}")
+            view_button = Gtk.Button()
+            view_button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+            view_icon = Gtk.Image.new_from_icon_name("view-app-grid-symbolic", Gtk.IconSize.BUTTON)
+            view_label = Gtk.Label(label=f"VIEW {i}")
+            view_button_box.pack_start(view_icon, False, False, 0)
+            view_button_box.pack_start(view_label, False, False, 0)
+            view_button.add(view_button_box)
             view_button.set_size_request(280, 40)
             view_list_box.pack_start(view_button, False, False, 0)
         sidebar_box.pack_start(view_list_box, False, False, 0)
+
+        self.sidebar_revealer.add(sidebar_box)
+        content_box.pack_start(self.sidebar_revealer, False, False, 0)
 
         # Main Content Area
         center_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -97,8 +102,9 @@ class MainWindow(Gtk.Window):
         main_box.pack_end(bottom_bar, False, False, 0)
 
         # Add Button
-        add_button = Gtk.Button(label="Tambah")
+        add_button = Gtk.Button(label="Add Resource")
         add_button.set_size_request(100, 40)
+        add_button.get_style_context().add_class("suggested-action") 
         add_button.connect("clicked", self.on_add_button_clicked)
         bottom_bar.pack_start(add_button, False, False, 0)
 

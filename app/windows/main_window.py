@@ -15,14 +15,56 @@ class MainWindow(Gtk.Window):
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.add(main_box)
 
-        # Main Area
+        # Horizontal Box untuk Sidebar dan Main Area
+        content_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        main_box.pack_start(content_box, True, True, 0)
+
+        # Sidebar Revealer
+        self.sidebar_revealer = Gtk.Revealer()
+        self.sidebar_revealer.set_transition_type(Gtk.RevealerTransitionType.SLIDE_RIGHT)
+        self.sidebar_revealer.set_transition_duration(300)
+        self.sidebar_revealer.set_reveal_child(False)
+
+        # Sidebar Content
+        sidebar_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        sidebar_box.set_size_request(300, -1)
+        sidebar_box.set_margin_top(10)
+        sidebar_box.set_margin_bottom(10)
+        sidebar_box.set_margin_left(10)
+        sidebar_box.set_margin_right(10)
+
+        # Add some example widgets to the sidebar
+        sidebar_label = Gtk.Label(label="Configuration")
+        sidebar_label.set_markup('<span font="20">Configuration</span>')
+        sidebar_box.pack_start(sidebar_label, False, False, 0)
+
+        # Example: Brightness Adjustment
+        brightness_label = Gtk.Label(label="Brightness:")
+        sidebar_box.pack_start(brightness_label, False, False, 0)
+
+        brightness_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
+        brightness_scale.set_value(50)
+        sidebar_box.pack_start(brightness_scale, False, False, 0)
+
+        # Example: Contrast Adjustment
+        contrast_label = Gtk.Label(label="Contrast:")
+        sidebar_box.pack_start(contrast_label, False, False, 0)
+
+        contrast_scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 1)
+        contrast_scale.set_value(50)
+        sidebar_box.pack_start(contrast_scale, False, False, 0)
+
+        self.sidebar_revealer.add(sidebar_box)
+        content_box.pack_start(self.sidebar_revealer, False, False, 0)
+
+        # Main Content Area
         center_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         center_box.set_vexpand(True)
         self.main_area_label = Gtk.Label(label="Main Area")
         self.main_area_label.set_markup('<span foreground="#B3B3B3" font="20">Main Area</span>')
         self.main_area_label.set_alignment(0.5, 0.5)
         center_box.pack_start(self.main_area_label, True, True, 0)
-        main_box.pack_start(center_box, True, True, 0)
+        content_box.pack_start(center_box, True, True, 0)
 
         # Bottom Bar
         bottom_bar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
@@ -80,7 +122,6 @@ class MainWindow(Gtk.Window):
         config_button.connect("clicked", self.on_config_button_clicked)
         bottom_bar.pack_end(config_button, False, False, 0)
 
-
     def on_add_button_clicked(self, button):
         """Tampilkan dialog MediaSourceDialog."""
         dialog = MediaSourceDialog(self.controller, self)
@@ -101,4 +142,5 @@ class MainWindow(Gtk.Window):
         print(f"{mode_name} Mode Selected!")
 
     def on_config_button_clicked(self, button):
-        print("Config Button Clicked!")
+        """Toggle the visibility of the sidebar."""
+        self.sidebar_revealer.set_reveal_child(not self.sidebar_revealer.get_reveal_child())

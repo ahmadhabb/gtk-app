@@ -108,13 +108,24 @@ class MainWindow(Gtk.Window):
         add_button.connect("clicked", self.on_add_button_clicked)
         bottom_bar.pack_start(add_button, False, False, 0)
 
+        
         # Play Button
-        play_button = Gtk.Button(label="")
+        play_button = Gtk.Button()
         play_button.set_size_request(40, 40)
+        play_button.get_style_context().add_class("suggested-action") 
         play_button.set_tooltip_text("Start")
-        play_button.set_image(Gtk.Image.new_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON))
+        play_icon = Gtk.Image.new_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON)
+        play_button.set_image(play_icon)
+
         play_button.connect("clicked", self.on_play_button_clicked)
         bottom_bar.pack_start(play_button, False, False, 0)
+
+        # play_button = Gtk.Button(label="")
+        # play_button.set_size_request(40, 40)
+        # play_button.set_tooltip_text("Start")
+        # play_button.set_image(Gtk.Image.new_from_icon_name("media-playback-start", Gtk.IconSize.BUTTON))
+        # play_button.connect("clicked", self.on_play_button_clicked)
+        # bottom_bar.pack_start(play_button, False, False, 0)
 
         # Mode Buttons
         modes = [

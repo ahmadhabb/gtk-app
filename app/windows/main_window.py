@@ -81,10 +81,15 @@ class MainWindow(Gtk.Window):
         # Main Content Area
         center_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         center_box.set_vexpand(True)
-        self.main_area_label = Gtk.Label(label="Main Area")
-        self.main_area_label.set_markup('<span foreground="#B3B3B3" font="20">Main Area</span>')
-        self.main_area_label.set_alignment(0.5, 0.5)
-        center_box.pack_start(self.main_area_label, True, True, 0)
+
+        # Menambahkan gambar dari folder assets
+        self.image = Gtk.Image()
+        self.image.set_from_file("../assets/moil.jpg")  # Ganti dengan nama file gambar yang benar
+
+        # Menambahkan gambar ke dalam box
+        center_box.pack_start(self.image, True, True, 0)
+
+        # Menambahkan ke content_box
         content_box.pack_start(center_box, True, True, 0)
 
         # Bottom Bar
@@ -155,13 +160,16 @@ class MainWindow(Gtk.Window):
         self.bottom_bar.pack_end(config_button, False, False, 0)
 
         # Panorama Button (initially hidden)
-        self.panorama_button = Gtk.Button(label="Panorama")
-        self.panorama_button.set_size_request(140, 40)
-        self.panorama_button.get_style_context().add_class("suggested-action")
-        self.panorama_button.set_visible(False)  # Initially hidden
+        self.panorama_toggle_button = Gtk.Button(label="Panorama (OFF)")
+        self.panorama_toggle_button = Gtk.Button(label="Panorama")
+        self.panorama_toggle_button.set_size_request(140, 40)
+        self.panorama_toggle_button.connect("clicked", self.on_panorama_toggle_button_clicked)
+        self.panorama_toggle_button.get_style_context().add_class("suggested-action")
+        self.panorama_toggle_button.set_visible(False)  # Initially hidden
         print("Panorama button initialized and hidden")  # Log untuk debugging
-        self.panorama_button.connect("clicked", self.on_panorama_button_clicked)
-        self.bottom_bar.pack_start(self.panorama_button, False, False, 0)
+
+        self.panorama_toggle_button.connect("clicked", self.on_panorama_button_clicked)
+        self.bottom_bar.pack_start(self.panorama_toggle_button, False, False, 0)
 
     def on_add_button_clicked(self, button):
         """Show MediaSourceDialog."""
@@ -238,6 +246,17 @@ class MainWindow(Gtk.Window):
             self.ai_toggle_button.set_label("AI Tracking (OFF)")
             self.ai_toggle_button.get_style_context().remove_class("suggested-action")
             self.ai_toggle_button.get_style_context().add_class("destructive-action")  # Red (OFF)
+
+    def on_panorama_toggle_button_clicked(self, button):
+        """Handle AI toggle button click."""
+        if  self.panorama_toggle_button.get_label() == "Panorama (OFF)":
+            self.panorama_toggle_button.set_label("Panorama(ON)")
+            self.panorama_toggle_button.get_style_context().remove_class("destructive-action")
+            self.panorama_toggle_button.get_style_context().add_class("suggested-action")  # Green (ON)
+        else:
+            self.panorama_toggle_button.set_label("Panorama (OFF)")
+            self.panorama_toggle_button.get_style_context().remove_class("suggested-action")
+            self.panorama_toggle_button.get_style_context().add_class("destructive-action")  # Red (OFF)
 
     def on_camera_toggle_button_clicked(self, button):
         """Handle Camera toggle button click."""

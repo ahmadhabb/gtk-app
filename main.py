@@ -14,3 +14,5 @@ if __name__ == "__main__":
     app = AppController(controller)  # Berikan controller
     app.run()
     Gtk.main()
+
+
